@@ -40,9 +40,9 @@ using namespace llvm;
         outs() << stmt;        \
     } while (0)
 
-#define MEPERM    2311
-#define MEACCES   23113
-#define MEROFS    23130
+#define MEPERM    1
+#define MEACCES   13
+#define MEROFS    30
 
 static void insertControlBlock(BasicBlock *BB, LinuxSS::BBSet &BS) {
 
@@ -308,6 +308,7 @@ bool LinuxSS::isErrorBranch(BasicBlock *Ancestor, BasicBlock *Descendent) {
         }
     }
 
+    return false;
     // should neve reach here
     llvm_unreachable("Ancestor should always be reachable from descendent");
 }

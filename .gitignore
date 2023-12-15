@@ -6,3 +6,5 @@ tags
 GPATH
 GRTAGS
 GTAGS
+linux-*
+result.*

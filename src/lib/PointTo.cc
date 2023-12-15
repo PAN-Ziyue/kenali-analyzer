@@ -142,6 +142,7 @@ static void createNodeForHeapObject(const Instruction *I, int SizeArg, int FlagA
                                     AndersNodeFactory &nodeFactory, StructAnalyzer &structAnalyzer) {
 
   const PointerType* pType = dyn_cast<PointerType>(I->getType());
+  if (!pType) return;
   assert(pType != NULL && "unhandled malloc function");
   const Type* elemType = pType->getElementType();
 

@@ -402,7 +402,7 @@ void CallGraphPass::processInitializers(Module *M, Constant *C, GlobalValue *V, 
     // structs
     if (ConstantStruct *CS = dyn_cast<ConstantStruct>(C)) {
         StructType *STy = CS->getType();
-        if (!STy->hasName() && Id.empty()) {
+        if (!STy->hasName() && Id.empty() && V) {
             Id = getVarId(V);
         }
         for (unsigned i = 0; i != STy->getNumElements(); ++i) {
