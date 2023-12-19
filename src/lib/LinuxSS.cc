@@ -500,7 +500,15 @@ bool LinuxSS::runOnFunction(Function *F) {
                 continue;
 
             if (i == -MEPERM || i == -MEACCES || i == -MEROFS) {
-                LSS_LOG("F: " << getScopeName(F) << "\n");
+                // LSS_LOG("F: " << getScopeName(F) << "\n");
+                for (auto &BB : *F) {
+                    for (auto &inst : BB) {
+                        auto name = getTypeName(&inst);
+                        if (name.rfind("\%struct") == 0) {
+                            LSS_LOG(name << "\n");
+                        }
+                    }
+                }
                 insertControlBlock(BB, CheckList);
             } else {
                 // branches that lead to unrelated errors are not interested

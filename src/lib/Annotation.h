@@ -1,6 +1,7 @@
 #ifndef _ANNOTATION_H
 #define _ANNOTATION_H
 
+#include <llvm-17/llvm/Support/TypeName.h>
 #pragma once
 
 #include <llvm/IR/Value.h>
@@ -50,6 +51,14 @@ static inline bool isFunctionPointerOrVoid(llvm::Type *Ty) {
 		return true;
 
 	return false;
+}
+
+static inline std::string getTypeName(const llvm::Value *V) {
+	auto type = V->getType();
+	std::string type_str;
+	llvm::raw_string_ostream rso(type_str);
+	type->print(rso);
+	return rso.str();
 }
 
 static inline std::string getScopeName(const llvm::GlobalValue *GV) {
