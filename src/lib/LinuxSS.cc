@@ -26,6 +26,7 @@
 #include <sys/types.h>
 #include <iostream>
 #include <fstream>
+#include <string>
 
 #include "LinuxSS.h"
 #include "Annotation.h"
@@ -73,7 +74,8 @@ bool LinuxSS::dumpControlDep(BasicBlock *CBB, BBSet &Checked) {
 
     LSS_DEBUG("=== Checked = ");
     for (BasicBlock *BB : Checked) {
-        BB->printAsOperand(errs());
+        if (VerboseLevel >= 2)
+            BB->printAsOperand(errs());
         LSS_DEBUG(", ");
     }
     LSS_DEBUG("\n");
@@ -104,7 +106,7 @@ bool LinuxSS::dumpControlDep(BasicBlock *CBB, BBSet &Checked) {
         if (BranchInst *BI = dyn_cast<BranchInst>(TI)) {
             if (BI->isConditional()) {
                 Value *Cond = BI->getCondition();
-                ret |= collectCondition(Cond);
+                                ret |= collectCondition(Cond);
             } else {
                 for (pred_iterator PI = pred_begin(BB), E = pred_end(BB); PI != E; ++PI) {
                     if (Visited.insert(*PI).second)
@@ -113,7 +115,7 @@ bool LinuxSS::dumpControlDep(BasicBlock *CBB, BBSet &Checked) {
             }
         } else if (SwitchInst *SI = dyn_cast<SwitchInst>(TI)) {
             Value *Cond = SI->getCondition();
-            ret |= collectCondition(Cond);
+                        ret |= collectCondition(Cond);
         }
     }
 
@@ -374,7 +376,28 @@ bool LinuxSS::checkControlDep(BBSet &CheckList, BBSet &BlackList) {
     return ret;
 }
 
+// drop struct layout
+void dropLayout(std::string &type) {
+    if (type.find("\%struct.") == 0) {
+        type = type.substr(0, type.find(" "));
+    }
+}
+
+std::string getTypeName(Type *type) {
+    std::string str;
+    raw_string_ostream rso(str);
+    type->print(rso);
+    return str; 
+}
+
 void LinuxSS::collectRetVal(Value *V, BasicBlock *BB, RetSet &RS, ValueSet &Visited) {
+    if (GetElementPtrInst *gep = dyn_cast<GetElementPtrInst>(V)) {
+        auto type = getTypeName(gep->getSourceElementType());
+        dropLayout(type);
+        if (type.find("\%struct") == 0) {
+            LSS_LOG("Res: " << type << "\n");
+        }
+    }
 
     User *U = dyn_cast<User>(V);
     if (U == nullptr)
@@ -501,14 +524,14 @@ bool LinuxSS::runOnFunction(Function *F) {
 
             if (i == -MEPERM || i == -MEACCES || i == -MEROFS) {
                 // LSS_LOG("F: " << getScopeName(F) << "\n");
-                for (auto &BB : *F) {
-                    for (auto &inst : BB) {
-                        auto name = getTypeName(&inst);
-                        if (name.rfind("\%struct") == 0) {
-                            LSS_LOG(name << "\n");
-                        }
-                    }
-                }
+                // for (auto &BB : *F) {
+                //     for (auto &inst : BB) {
+                //         auto name = getTypeName(&inst);
+                //         if (name.rfind("\%struct") == 0) {
+                //             LSS_LOG(name << "\n");
+                //         }
+                //     }
+                // }
                 insertControlBlock(BB, CheckList);
             } else {
                 // branches that lead to unrelated errors are not interested

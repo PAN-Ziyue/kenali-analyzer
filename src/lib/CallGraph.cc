@@ -289,7 +289,7 @@ bool CallGraphPass::findFunctions(Value *V, FuncSet &S,
             return mergeFuncSet(S, Id, InsertEmpty);
         } else {
             Function *f = L->getParent()->getParent();
-            errs() << "Empty LoadID: " << f->getName() << "::" << *L << "\n";
+            // errs() << "Empty LoadID: " << f->getName() << "::" << *L << "\n";
             return false;
         }
     }
@@ -378,7 +378,7 @@ bool CallGraphPass::runOnFunction(Function *F) {
                     findFunctions(V, FS);
                     Changed |= mergeFuncSet(Id, FS, isFunctionPointer(V->getType()));
                 } else {
-                    errs() << "Empty StoreID: " << F->getName() << "::" << *SI << "\n";
+                    // errs() << "Empty StoreID: " << F->getName() << "::" << *SI << "\n";
                 }
             }
         } else if (ReturnInst *RI = dyn_cast<ReturnInst>(I)) {

@@ -12,6 +12,6 @@ err.txt
 cmake_install.cmake
 CMakeCache.txt
 compile_commands.json
-lib/
+/lib/
 CMakeFiles/
 .cache/
