@@ -1,0 +1,7 @@
+---
+library: false
+warnOnImplicitThis: false
+name: kenali-codeql
+version: 0.0.1
+dependencies:
+  codeql/cpp-all: ^0.12.2
